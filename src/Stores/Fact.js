@@ -1,9 +1,7 @@
 import Client from "../Client.js";
 import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
-import { initLanguageCodeObject, defaultLanguage } from '../Utilities/LanguageCodes'
+import { initLanguageCodeObject, defaultLanguage } from '../Utilities/LanguageCodes';
 
-const unsubscribe = new Subject();
 let changeListeners = [];
 let facts = initLanguageCodeObject();
 
@@ -13,7 +11,7 @@ let notifyChange = () => {
   });
 }
 
-let fetchFacts = (language, urlSlug) => {
+let fetchFacts = (unsubscribeSubject, language, urlSlug) => {
   let query = Client.items()
     .type('about_us');
 
@@ -26,7 +24,7 @@ let fetchFacts = (language, urlSlug) => {
   }
 
   query.getObservable()
-    .pipe(takeUntil(unsubscribe))
+    .pipe(takeUntil(unsubscribeSubject))
     .subscribe(response => {
       if (language) {
         facts[language] = response.items[0].facts;
@@ -41,8 +39,8 @@ class FactStore {
 
   // Actions
 
-  provideFacts(language, urlSlug) {
-    fetchFacts(language, urlSlug);
+  provideFacts(unsubscribeSubject, language, urlSlug) {
+    fetchFacts(unsubscribeSubject, language, urlSlug);
   }
 
   // Methods
@@ -62,12 +60,6 @@ class FactStore {
       return element !== listener;
     });
   }
-
-  unsubscribe() {
-    unsubscribe.next();
-    unsubscribe.complete();
-  }
-
 }
 
 export default new FactStore();

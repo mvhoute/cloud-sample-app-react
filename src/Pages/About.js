@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import FactStore from '../Stores/Fact';
 import RichTextElement from '../Components/RichTextElement';
+import { withUnsubscription } from '../Utilities/withUnsubscription';
 
 let getState = (props) => {
   return {
@@ -18,17 +19,16 @@ class About extends Component {
 
   componentDidMount() {
     FactStore.addChangeListener(this.onChange);
-    FactStore.provideFacts(this.props.language, this.props.match.params.urlSlug);
+    FactStore.provideFacts(this.props.unsubscribeSubject, this.props.language, this.props.match.params.urlSlug);
   }
 
   componentWillUnmount() {
-    FactStore.removeChangeListener(this.onChange);
-    FactStore.unsubscribe();
+    FactStore.removeChangeListener(this.onChange);    
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.language !== nextProps.language) {
-      FactStore.provideFacts(nextProps.language, nextProps.match.params.urlSlug);
+      FactStore.provideFacts(nextProps.unsubscribeSubject, nextProps.language, nextProps.match.params.urlSlug);
     }
   }
 
@@ -77,4 +77,4 @@ class About extends Component {
   }
 }
 
-export default About;
+export default withUnsubscription(About);

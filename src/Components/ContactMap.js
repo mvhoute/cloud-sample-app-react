@@ -29,10 +29,14 @@ export class MapContainer extends Component {
         if (!nextProps.loaded) {
             return;
         }
-
+        
         if (nextState.reloadRequired || !_.isEqual(this.props.cafesAddresses, nextProps.cafesAddresses)) {
             this.reloadMarkers(nextProps.cafesAddresses);
         }
+    }
+
+    componentDidMount() {
+        this.reloadMarkers(this.props.cafesAddresses);
     }
 
     componentWillReceiveProps(nextProps){
