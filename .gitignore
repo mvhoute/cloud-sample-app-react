@@ -13,3 +13,6 @@ npm-debug.log
 # IDE
 .vs
 .vscode
+\.idea/
+
+yarn\.lock
